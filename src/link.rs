@@ -1,5 +1,7 @@
 use crate::base58;
 use crate::constant::LINK_ID_LEN;
+use crate::core::Entity;
+use crate::core::ID;
 use chrono::NaiveDateTime;
 use std::hash::DefaultHasher;
 use std::hash::Hash;
@@ -29,6 +31,12 @@ impl Link {
             id: next_link_id(&self.id),
             ..self.clone()
         }
+    }
+}
+
+impl Entity for Link {
+    fn get_id(&self) -> ID {
+        self.id.clone()
     }
 }
 
