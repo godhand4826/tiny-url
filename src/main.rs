@@ -25,8 +25,8 @@ fn main() {
                     .create_short_link(Picsum::new().to_string());
 
                 match result {
-                    Ok(link) => println!("Thread {}: generated {}", i, link),
-                    Err(err) => println!("Thread {}: generate failed: {:?}", i, err),
+                    Ok(link) => println!("Thread {} generated {}", i, link),
+                    Err(err) => println!("Thread {} generate failed: {:?}", i, err),
                 }
             }
             println!("Thread {} finished", i);
