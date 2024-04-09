@@ -5,6 +5,7 @@ use tiny_url::constant::ITERATIONS;
 use tiny_url::constant::THREADS;
 use tiny_url::core::OwnedRepository;
 use tiny_url::link::Link;
+use tiny_url::lorem::Picsum;
 use tiny_url::repository;
 use tiny_url::service;
 
@@ -21,7 +22,7 @@ fn main() {
                 let result = use_case
                     .lock()
                     .unwrap()
-                    .create_short_link(format!("https://www.google.com?q={}", i));
+                    .create_short_link(Picsum::new().to_string());
 
                 match result {
                     Ok(link) => println!("Thread {}: generated {}", i, link),

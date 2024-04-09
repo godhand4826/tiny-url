@@ -1,4 +1,3 @@
-
 use crate::constant::MAX_ATTEMPT;
 use crate::core::{OwnedRepository, RepositoryError, ID};
 use crate::link::Link;
