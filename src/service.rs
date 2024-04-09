@@ -1,9 +1,12 @@
+
 use crate::constant::MAX_ATTEMPT;
 use crate::core::{OwnedRepository, RepositoryError, ID};
 use crate::link::Link;
+use url::{ParseError, Url};
 
 #[derive(Debug)]
 pub enum CreateLinkError {
+    InvalidUrl(ParseError),
     MaxAttemptExceeded(usize),
     Internal(RepositoryError),
 }
@@ -24,6 +27,8 @@ impl ShortLinkService {
     }
 
     pub fn create_short_link(&mut self, url: String) -> Result<Link, CreateLinkError> {
+        Url::parse(&url).map_err(CreateLinkError::InvalidUrl)?;
+
         let mut link = Link::new(url, None);
 
         for attempt in 1..=MAX_ATTEMPT {

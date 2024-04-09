@@ -3,7 +3,6 @@ use std::sync::Mutex;
 use std::thread;
 use tiny_url::constant::ITERATIONS;
 use tiny_url::constant::THREADS;
-use tiny_url::core::Entity;
 use tiny_url::core::OwnedRepository;
 use tiny_url::link::Link;
 use tiny_url::repository;
@@ -19,15 +18,14 @@ fn main() {
 
         let handle = thread::spawn(move || {
             for _ in 0..ITERATIONS {
-                let url = i.to_string();
-                let result = use_case.lock().unwrap().create_short_link(url.clone());
-                match result.map(|link| link.get_id()) {
-                    Ok(id) => {
-                        println!("Thread {}: generated {}", i, id);
-                    }
-                    Err(err) => {
-                        println!("Thread {}: generate failed: {:?}", i, err);
-                    }
+                let result = use_case
+                    .lock()
+                    .unwrap()
+                    .create_short_link(format!("https://www.google.com?q={}", i));
+
+                match result {
+                    Ok(link) => println!("Thread {}: generated {}", i, link),
+                    Err(err) => println!("Thread {}: generate failed: {:?}", i, err),
                 }
             }
             println!("Thread {} finished", i);
