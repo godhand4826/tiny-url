@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Tiny URL</title>
+</head>
+
+<body style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+  <div>
+    <div>
+      <fieldset>
+        <legend>URL shortener</legend>
+        <div>
+          <label for="input">Original URL:</label>
+          <input id="input" type="text" placeholder="type here or paste anywhere" autocomplete="off"
+            style="width: 50vw" />
+          <button id="submit" type="submit">Enter</button>
+        </div>
+        <div>
+          <label for="output">Shorten URL:</label>
+          <a id="output" href="#">the shorten URL will be shown here</a>
+          <button id="copy" data-clipboard-target="#output">Copy</button>
+        </div>
+      </fieldset>
+    </div>
+    <div>
+      <fieldset>
+        <legend>Settings</legend>
+        <div>
+          <input type="checkbox" id="auto_submit" name="auto_submit" checked />
+          <label for="auto_submit">auto submit on paste</label>
+        </div>
+        <div>
+          <input type="checkbox" id="auto_copy" name="auto_copy" />
+          <label for="auto_copy">auto copy result to clipboard</label>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js"></script>
+  <script src="index.js"></script>
+</body>
+
+</html>

@@ -25,7 +25,8 @@ async fn main() -> io::Result<()> {
     let link_service = Mutex::new(service::ShortLinkService::new(repo));
     let link_service = web::Data::new(link_service);
 
-    log::info!("starting HTTP server at {}", config.socket_addr);
+    log::info!("starting HTTP server at http://{}", config.socket_addr);
+    log::info!("please visit http://{}/static/index.html", config.socket_addr);
 
     HttpServer::new(move || {
         App::new()
@@ -40,6 +41,7 @@ async fn main() -> io::Result<()> {
             .app_data(link_service.clone())
             .service(tiny_url::route::get_short_link)
             .service(tiny_url::route::create_short_link)
+            .service(actix_files::Files::new("/static", "./static").index_file("index.html"))
     })
     .bind(config.socket_addr)?
     .workers(1)
