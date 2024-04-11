@@ -1,43 +1,45 @@
-use std::sync::Arc;
+use actix_cors::Cors;
+use actix_web::middleware::Logger;
+use actix_web::web;
+use actix_web::App;
+use actix_web::HttpServer;
+use log;
+use std::io;
 use std::sync::Mutex;
-use std::thread;
-use tiny_url::constant::ITERATIONS;
-use tiny_url::constant::THREADS;
 use tiny_url::core::OwnedRepository;
 use tiny_url::link::Link;
-use tiny_url::lorem::Picsum;
 use tiny_url::repository;
 use tiny_url::service;
 
-fn main() {
+#[actix_web::main]
+async fn main() -> io::Result<()> {
+    let _ = pretty_env_logger::formatted_builder()
+        .default_format()
+        .parse_filters("info")
+        .init();
+
     let repo: OwnedRepository<Link> = Box::new(repository::HashMapRepository::new());
-    let link_service = Arc::new(Mutex::new(service::ShortLinkService::new(repo)));
+    let link_service = Mutex::new(service::ShortLinkService::new(repo));
+    let link_service = web::Data::new(link_service);
 
-    let mut handles = vec![];
-    for i in 0..THREADS {
-        let use_case = link_service.clone();
+    log::info!("starting HTTP server at http://localhost:8080");
 
-        let handle = thread::spawn(move || {
-            for _ in 0..ITERATIONS {
-                let result = use_case
-                    .lock()
-                    .unwrap()
-                    .create_short_link(Picsum::new().to_string());
-
-                match result {
-                    Ok(link) => println!("Thread {} generated {}", i, link),
-                    Err(err) => println!("Thread {} generate failed: {:?}", i, err),
-                }
-            }
-            println!("Thread {} finished", i);
-        });
-
-        handles.push(handle);
-    }
-
-    handles
-        .into_iter()
-        .for_each(|handle| handle.join().unwrap());
-
-    println!("All threads finished");
+    HttpServer::new(move || {
+        App::new()
+            .wrap(
+                Cors::default()
+                    .allowed_origin("http://localhost:8080")
+                    .allowed_methods(vec!["GET", "POST"])
+                    .supports_credentials()
+                    .max_age(3600),
+            )
+            .wrap(Logger::default())
+            .app_data(link_service.clone())
+            .service(tiny_url::route::get_short_link)
+            .service(tiny_url::route::create_short_link)
+    })
+    .bind(("127.0.0.1", 8080))?
+    .workers(1)
+    .run()
+    .await
 }

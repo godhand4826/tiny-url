@@ -47,7 +47,7 @@ impl ShortLinkService {
         Err(CreateLinkError::MaxAttemptExceeded(MAX_ATTEMPT))
     }
 
-    pub fn get_link_by_id(&mut self, id: &String) -> Result<Link, GetLinkError> {
+    pub fn get_link_by_id(&self, id: &String) -> Result<Link, GetLinkError> {
         match self.repository.get(&id) {
             Ok(link) => Ok(link),
             Err(RepositoryError::NotFound(id)) => Err(GetLinkError::NotFound(id)),
