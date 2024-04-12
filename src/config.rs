@@ -18,7 +18,8 @@ impl Config {
                 .parse()
                 .expect("SOCKET_ADDR must be a valid SocketAddr"),
             log_level: env::var("LOG_LEVEL").unwrap_or("info".to_string()),
-            cors_allowed_origin: env::var("CORS_ALLOWED_ORIGIN").expect("CORS_ALLOWED_ORIGIN must be set")
+            cors_allowed_origin: env::var("CORS_ALLOWED_ORIGIN")
+                .expect("CORS_ALLOWED_ORIGIN must be set"),
         }
     }
 }

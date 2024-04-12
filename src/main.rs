@@ -26,7 +26,10 @@ async fn main() -> io::Result<()> {
     let link_service = web::Data::new(link_service);
 
     log::info!("starting HTTP server at http://{}", config.socket_addr);
-    log::info!("please visit http://{}/static/index.html", config.socket_addr);
+    log::info!(
+        "please visit http://{}/static/index.html",
+        config.socket_addr
+    );
 
     HttpServer::new(move || {
         App::new()

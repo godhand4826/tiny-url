@@ -1,13 +1,19 @@
 use crate::service::{CreateLinkError, GetLinkError, ShortLinkService};
 use actix_web::{get, http, post, web, HttpResponse, Responder};
+use serde::Deserialize;
 use std::sync::Mutex;
 
+#[derive(Deserialize)]
+struct CreateLinkRequest {
+    url: String,
+}
+
 #[post("/")]
-async fn create_short_link(data: web::Data<Mutex<ShortLinkService>>) -> impl Responder {
-    let result = data
-        .lock()
-        .unwrap()
-        .create_short_link("https://www.google.com".to_string());
+async fn create_short_link(
+    data: web::Data<Mutex<ShortLinkService>>,
+    req: web::Json<CreateLinkRequest>,
+) -> impl Responder {
+    let result = data.lock().unwrap().create_short_link(req.url.clone());
     match result {
         Ok(link) => HttpResponse::Ok().body(link.id),
         Err(CreateLinkError::InvalidUrl(err)) => HttpResponse::BadRequest().body(err.to_string()),

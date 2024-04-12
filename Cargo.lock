@@ -1253,6 +1253,7 @@ dependencies = [
  "log",
  "pretty_env_logger",
  "rand",
+ "serde",
  "url",
 ]
 
