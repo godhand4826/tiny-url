@@ -12,7 +12,7 @@ async fn create_short_link(
     data: web::Data<ShortLinkService>,
     req: web::Json<CreateLinkRequest>,
 ) -> impl Responder {
-    let result = data.create_short_link(req.url.clone());
+    let result = data.create_short_link(req.url.clone()).await;
     match result {
         Ok(link) => HttpResponse::Ok().body(link.id),
         Err(CreateLinkError::InvalidUrl(err)) => HttpResponse::BadRequest().body(err.to_string()),
@@ -29,7 +29,7 @@ async fn get_short_link(
     path: web::Path<String>,
     data: web::Data<ShortLinkService>,
 ) -> impl Responder {
-    let result = data.get_link_by_id(&path.into_inner());
+    let result = data.get_link_by_id(&path.into_inner()).await;
 
     match result {
         Ok(link) => HttpResponse::Found()

@@ -1,5 +1,6 @@
 use crate::core::RepositoryError;
 use crate::core::{Entity, Repository, ID};
+use async_trait::async_trait;
 use std::collections::HashMap;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -20,8 +21,9 @@ impl<T: Entity + Send + Sync> HashMapRepository<T> {
     }
 }
 
-impl<T: Entity + Clone> Repository<T> for HashMapRepository<T> {
-    fn insert(&self, t: T) -> Result<(), RepositoryError> {
+#[async_trait]
+impl<T: Entity + Clone + Send + Sync> Repository<T> for HashMapRepository<T> {
+    async fn insert(&self, t: T) -> Result<(), RepositoryError> {
         let id = t.get_id();
         let mut map = self.hash_map.lock().unwrap();
 
@@ -38,7 +40,7 @@ impl<T: Entity + Clone> Repository<T> for HashMapRepository<T> {
         Result::Ok(())
     }
 
-    fn update(&self, t: T) -> Result<(), RepositoryError> {
+    async fn update(&self, t: T) -> Result<(), RepositoryError> {
         let id = t.get_id();
 
         self.hash_map
@@ -49,7 +51,7 @@ impl<T: Entity + Clone> Repository<T> for HashMapRepository<T> {
             .ok_or(RepositoryError::NotFound(id))
     }
 
-    fn get(&self, id: &String) -> Result<T, RepositoryError> {
+    async fn get(&self, id: &String) -> Result<T, RepositoryError> {
         self.hash_map
             .lock()
             .unwrap()
@@ -58,7 +60,7 @@ impl<T: Entity + Clone> Repository<T> for HashMapRepository<T> {
             .ok_or(RepositoryError::NotFound(id.clone()))
     }
 
-    fn delete(&self, id: &String) -> Result<(), RepositoryError> {
+    async fn delete(&self, id: &String) -> Result<(), RepositoryError> {
         match self.hash_map.lock().unwrap().remove(id) {
             Some(_) => Result::Ok(()),
             None => Result::Err(RepositoryError::NotFound(id.clone())),
