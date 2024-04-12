@@ -5,7 +5,6 @@ use actix_web::App;
 use actix_web::HttpServer;
 use log;
 use std::io;
-use std::sync::Mutex;
 use tiny_url::config::Config;
 use tiny_url::core::OwnedRepository;
 use tiny_url::link::Link;
@@ -22,8 +21,7 @@ async fn main() -> io::Result<()> {
         .init();
 
     let repo: OwnedRepository<Link> = Box::new(repository::HashMapRepository::new());
-    let link_service = Mutex::new(service::ShortLinkService::new(repo));
-    let link_service = web::Data::new(link_service);
+    let link_service = service::ShortLinkService::new(repo);
 
     log::info!("starting HTTP server at http://{}", config.socket_addr);
     log::info!(
@@ -31,6 +29,7 @@ async fn main() -> io::Result<()> {
         config.socket_addr
     );
 
+    let link_service = web::Data::new(link_service);
     HttpServer::new(move || {
         App::new()
             .wrap(

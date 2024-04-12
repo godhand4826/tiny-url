@@ -25,7 +25,7 @@ impl ShortLinkService {
         ShortLinkService { repository }
     }
 
-    pub fn create_short_link(&mut self, url: String) -> Result<Link, CreateLinkError> {
+    pub fn create_short_link(&self, url: String) -> Result<Link, CreateLinkError> {
         Url::parse(&url).map_err(CreateLinkError::InvalidUrl)?;
 
         let mut link = Link::new(url, None);

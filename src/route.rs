@@ -1,7 +1,6 @@
 use crate::service::{CreateLinkError, GetLinkError, ShortLinkService};
 use actix_web::{get, http, post, web, HttpResponse, Responder};
 use serde::Deserialize;
-use std::sync::Mutex;
 
 #[derive(Deserialize)]
 struct CreateLinkRequest {
@@ -10,10 +9,10 @@ struct CreateLinkRequest {
 
 #[post("/")]
 async fn create_short_link(
-    data: web::Data<Mutex<ShortLinkService>>,
+    data: web::Data<ShortLinkService>,
     req: web::Json<CreateLinkRequest>,
 ) -> impl Responder {
-    let result = data.lock().unwrap().create_short_link(req.url.clone());
+    let result = data.create_short_link(req.url.clone());
     match result {
         Ok(link) => HttpResponse::Ok().body(link.id),
         Err(CreateLinkError::InvalidUrl(err)) => HttpResponse::BadRequest().body(err.to_string()),
@@ -28,9 +27,9 @@ async fn create_short_link(
 #[get("/{link_id}")]
 async fn get_short_link(
     path: web::Path<String>,
-    data: web::Data<Mutex<ShortLinkService>>,
+    data: web::Data<ShortLinkService>,
 ) -> impl Responder {
-    let result = data.lock().unwrap().get_link_by_id(&path.into_inner());
+    let result = data.get_link_by_id(&path.into_inner());
 
     match result {
         Ok(link) => HttpResponse::Found()

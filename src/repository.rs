@@ -21,7 +21,7 @@ impl<T: Entity + Send + Sync> HashMapRepository<T> {
 }
 
 impl<T: Entity + Clone> Repository<T> for HashMapRepository<T> {
-    fn insert(&mut self, t: T) -> Result<(), RepositoryError> {
+    fn insert(&self, t: T) -> Result<(), RepositoryError> {
         let id = t.get_id();
         let mut map = self.hash_map.lock().unwrap();
 
@@ -38,7 +38,7 @@ impl<T: Entity + Clone> Repository<T> for HashMapRepository<T> {
         Result::Ok(())
     }
 
-    fn update(&mut self, t: T) -> Result<(), RepositoryError> {
+    fn update(&self, t: T) -> Result<(), RepositoryError> {
         let id = t.get_id();
 
         self.hash_map
@@ -58,7 +58,7 @@ impl<T: Entity + Clone> Repository<T> for HashMapRepository<T> {
             .ok_or(RepositoryError::NotFound(id.clone()))
     }
 
-    fn delete(&mut self, id: &String) -> Result<(), RepositoryError> {
+    fn delete(&self, id: &String) -> Result<(), RepositoryError> {
         match self.hash_map.lock().unwrap().remove(id) {
             Some(_) => Result::Ok(()),
             None => Result::Err(RepositoryError::NotFound(id.clone())),

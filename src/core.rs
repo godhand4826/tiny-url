@@ -8,10 +8,10 @@ pub trait Entity {
 }
 
 pub trait Repository<T: Entity> {
-    fn insert(&mut self, t: T) -> Result<(), RepositoryError>;
-    fn update(&mut self, t: T) -> Result<(), RepositoryError>;
+    fn insert(&self, t: T) -> Result<(), RepositoryError>;
+    fn update(&self, t: T) -> Result<(), RepositoryError>;
     fn get(&self, id: &String) -> Result<T, RepositoryError>;
-    fn delete(&mut self, id: &String) -> Result<(), RepositoryError>;
+    fn delete(&self, id: &String) -> Result<(), RepositoryError>;
 }
 
 pub type OwnedRepository<T> = Box<dyn Repository<T> + Send + Sync>;
