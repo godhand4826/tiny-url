@@ -28,7 +28,7 @@ impl ShortLinkService {
     pub async fn create_short_link(&self, url: String) -> Result<Link, CreateLinkError> {
         Url::parse(&url).map_err(CreateLinkError::InvalidUrl)?;
 
-        let mut link = Link::new(url, None);
+        let mut link = Link::new(url);
 
         for attempt in 1..=MAX_ATTEMPT {
             match self.repository.insert(link.clone()).await {
